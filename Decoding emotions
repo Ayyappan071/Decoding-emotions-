@@ -1,0 +1,39 @@
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import pandas as pd
+
+# Ensure that the VADER lexicon is downloaded
+nltk.download('vader_lexicon')
+
+# Initialize the SentimentIntensityAnalyzer
+sia = SentimentIntensityAnalyzer()
+
+# Sample social media posts
+data = {
+    'post': [
+        "I love the new features in the latest update! 😊",
+        "This is the worst app ever. It keeps crashing. 😡",
+        "The customer service was okay, not great, not bad.",
+        "Absolutely fantastic experience! Highly recommend! 😍",
+        "I'm so frustrated with the recent changes. 😤"
+    ]
+}
+
+# Create a DataFrame
+df = pd.DataFrame(data)
+
+# Function to classify sentiment
+def classify_sentiment(score):
+    if score >= 0.05:
+        return 'Positive'
+    elif score <= -0.05:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+# Apply sentiment analysis
+df['compound'] = df['post'].apply(lambda x: sia.polarity_scores(x)['compound'])
+df['sentiment'] = df['compound'].apply(classify_sentiment)
+
+# Display the results
+print(df[['post', 'sentiment']])
